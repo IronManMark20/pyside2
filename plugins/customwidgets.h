@@ -24,18 +24,14 @@
 #define _PY_CUSTOM_WIDGETS_H_
 
 #include <shiboken.h>
-#include <customwidget.h>
 
-#include <QtDesigner/QtDesigner>
-#include <QtPlugin>
-#include <QDesignerCustomWidgetInterface>
-
-// Qt5: no idea why this definition is not found automatically! It should come
-// from <QDesignerCustomWidgetInterface> which resolves to Qt5's customwidget.h
-#ifdef Q_MOC_RUN
-Q_DECLARE_INTERFACE(QDesignerCustomWidgetCollectionInterface, 
-                    "org.qt-project.Qt.QDesignerCustomWidgetCollectionInterface")
+#include <QtCore/QtGlobal>
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
+ #include <QtDesigner/QDesignerCustomWidgetInterface>
+#else
+ #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 #endif
+
 
 struct PyCustomWidgetsPrivate;
 
@@ -43,6 +39,7 @@ class PyCustomWidgets: public QObject, public QDesignerCustomWidgetCollectionInt
 {
     Q_OBJECT
     Q_INTERFACES(QDesignerCustomWidgetCollectionInterface)
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.PySide.PyCustomWidgetsInterface")
 
 public:
     PyCustomWidgets(QObject *parent = 0);
