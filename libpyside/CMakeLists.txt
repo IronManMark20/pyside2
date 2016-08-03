@@ -52,6 +52,18 @@ set_target_properties(pyside2 PROPERTIES
                       OUTPUT_NAME "pyside2${pyside2_SUFFIX}${SHIBOKEN_PYTHON_EXTENSION_SUFFIX}"
                       DEFINE_SYMBOL PYSIDE_EXPORTS)
 
+if (NOT android)
+    set_target_properties(pyside2 PROPERTIES
+                      VERSION ${BINDING_API_VERSION}
+                      SOVERSION "${BINDING_API_MAJOR_VERSION}.${BINDING_API_MINOR_VERSION}"
+                      OUTPUT_NAME "pyside2${pyside2_SUFFIX}${SHIBOKEN_PYTHON_EXTENSION_SUFFIX}"
+                      DEFINE_SYMBOL PYSIDE_EXPORTS)
+else()
+    set_target_properties(pyside2 PROPERTIES
+                      OUTPUT_NAME "pyside2${pyside_SUFFIX}${SHIBOKEN_PYTHON_EXTENSION_SUFFIX}"
+                      DEFINE_SYMBOL PYSIDE_EXPORTS)
+endif()
+
 #
 # install stuff
 #
