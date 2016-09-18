@@ -10,15 +10,32 @@ set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Macros/
 
 option(USE_PYTHON_VERSION "Use specific python version to build pyside2." "")
 
-if (USE_PYTHON_VERSION)
-    find_package(PythonLibs ${USE_PYTHON_VERSION} REQUIRED)
-    find_package(PythonInterp ${USE_PYTHON_VERSION} REQUIRED)
-else()
-    find_package(PythonLibs 2.6)
-    find_package(PythonInterp 2.6)
+if(android)
+     set(SITE_PACKAGE ${HOME}/pyside-android-build/)
 endif()
 
-if (UNIX AND NOT APPLE)
+if(NOT android)
+    if (USE_PYTHON_VERSION)
+        find_package(PythonLibs ${USE_PYTHON_VERSION} REQUIRED)
+        find_package(PythonInterp ${USE_PYTHON_VERSION} REQUIRED)
+    else()
+        find_package(PythonLibs 2.6)
+        find_package(PythonInterp 2.6)
+    endif()
+endif()
+
+## For debugging the PYTHON* variables
+message("PYTHONLIBS_FOUND: " ${PYTHONLIBS_FOUND})
+message("PYTHON_LIBRARIES: " ${PYTHON_LIBRARIES})
+message("PYTHON_INCLUDE_DIRS: " ${PYTHON_INCLUDE_DIRS})
+message("PYTHON_DEBUG_LIBRARIES: " ${PYTHON_DEBUG_LIBRARIES})
+message("PYTHONINTERP_FOUND: " ${PYTHONINTERP_FOUND})
+message("PYTHON_EXECUTABLE: " ${PYTHON_EXECUTABLE})
+message("PYTHON_VERSION_MAJOR: " ${PYTHON_VERSION_MAJOR})
+message("PYTHON_VERSION_MINOR: " ${PYTHON_VERSION_MINOR})
+message("PYTHON_VERSION_PATCH: " ${PYTHON_VERSION_PATCH})
+
+if (UNIX AND NOT APPLE AND NOT )
     # TODO: This part needs more testing first to be available on OSX and WIN
     # Also note the quirk that UNIX includes Apple!
   if (NOT PYTHON_MULTIARCH_SUFFIX)
@@ -63,8 +80,8 @@ if (UNIX AND NOT APPLE)
   message("PYTHON_EXTENSION_SUFFIX: " ${PYTHON_EXTENSION_SUFFIX})
 endif ()
 
-find_package(Shiboken2 2.0.0 REQUIRED)
-find_package(Qt5 5.3.0 REQUIRED COMPONENTS Core) 
+find_package(Shiboken2 REQUIRED)
+find_package(Qt5 5.6.0 REQUIRED COMPONENTS Core) 
 add_definitions(${Qt5Core_DEFINITIONS})
 
 find_file(GL_H "gl.h" PATH_SUFFIXES "GL")
@@ -127,6 +144,7 @@ else()
         string(REPLACE " " ":" QT_INCLUDE_DIR ${QT_INCLUDE_DIR})
     endif()
 endif()
+
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE ${SHIBOKEN_BUILD_TYPE})
@@ -248,10 +266,12 @@ endif()
 
 find_package(Qt5Qml)
 add_subdirectory(libpyside)
-find_package(Qt5Designer)
-find_package(Qt5UiTools)
-if(Qt5UiTools_FOUND AND Qt5Designer_FOUND)
-    add_subdirectory(plugins)
+if(NOT android)
+     find_package(Qt5Designer)
+     find_package(Qt5UiTools)
+     if(Qt5UiTools_FOUND AND Qt5Designer_FOUND)
+         add_subdirectory(plugins)
+     endif()
 endif()
 # project directories
 add_subdirectory(PySide2)
